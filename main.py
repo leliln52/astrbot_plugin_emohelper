@@ -22,11 +22,11 @@ class MyPlugin(Star):
         if len(context) > self.max_history_length:
             context.pop(0)
     def prompt_joint(self, context):
-        a=0
+        count=0
         prompt = ""
         while a < len(context):
             prompt += str(context[a])
-            a += 1
+            count += 1
         return prompt
     @filter.event_message_type(filter.EventMessageType.ALL)
     async def on_all_message(self, event: AstrMessageEvent):
