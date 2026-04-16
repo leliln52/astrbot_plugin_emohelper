@@ -22,11 +22,11 @@ class MyPlugin(Star):
         if len(context) > self.max_history_length:
             context.pop(0)
     def prompt_joint(self, context):
-        count=0
+        a=0
         prompt = ""
         while a < len(context):
             prompt += str(context[a])
-            count += 1
+            a += 1
         return prompt
     @filter.event_message_type(filter.EventMessageType.ALL)
     async def on_all_message(self, event: AstrMessageEvent):
@@ -38,12 +38,12 @@ class MyPlugin(Star):
         provider_id = await self.context.get_current_chat_provider_id(umo=umo)
         score = s.sentiments
         logger.info(f"{message_str}的情感分析值为{score}")
+        session_id = event.session_id
+        context = self.get_context(session_id)
+        history_prompt = self.prompt_joint(context)
         if message_str == "test":
             yield event.plain_result(f"{message_str}的情感分析值为{score}")
         if score <= 0.4:
-            session_id = event.session_id
-            context = self.get_context(session_id)
-            history_prompt = self.prompt_joint(context)
             llm_resp = await self.context.llm_generate(
                 chat_provider_id=provider_id,
                 prompt="用户之间疑似遇到了争吵或者心情不好，请你根据上下文进行回复\n\n" + history_prompt
